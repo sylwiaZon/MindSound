@@ -1,4 +1,4 @@
-package com.example.mindsound.ui.home;
+package com.example.mindsound.ui.login;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;

@@ -6,6 +6,12 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
+        android:id="@+id/navigation_log_in"
+        android:name="com.example.mindsound.ui.login.LoginFragment"
+        android:label="@string/title_log_in"
+        tools:layout="@layout/fragment_log_in" />
+
+    <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.mindsound.ui.home.HomeFragment"
         android:label="@string/title_home"
