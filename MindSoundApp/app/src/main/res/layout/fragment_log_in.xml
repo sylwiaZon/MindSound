@@ -23,12 +23,6 @@
             android:layout_gravity="center"
             android:src="@mipmap/main_logo_foreground" />
 
-        <TextView
-            android:id="@+id/connection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Not connected" />
-
         <ImageView
             android:id="@+id/log_in_with_spotify_button"
             android:layout_width="match_parent"

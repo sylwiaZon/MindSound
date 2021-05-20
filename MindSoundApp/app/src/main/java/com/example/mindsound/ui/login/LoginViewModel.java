@@ -13,10 +13,6 @@ public class LoginViewModel extends ViewModel {
         mText.setValue("This is home fragment");
     }
 
-    public void setmText(String text) {
-        mText.setValue(text);
-    }
-
     public LiveData<String> getText() {
         return mText;
     }
