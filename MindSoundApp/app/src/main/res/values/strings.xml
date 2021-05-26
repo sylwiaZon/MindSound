@@ -4,6 +4,9 @@
     <string name="title_start">Start</string>
     <string name="title_log_in">Log in</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_settings">Settings</string>
+    <string name="blink_detection_preference">BlinkDetectionPreference</string>
+    <string name="playlist_preference">PlaylistPreference</string>
+    <string name="match_mood_preference">MatchMoodPreference</string>
     <string name="what_is_mindsound">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus rutrum lobortis imperdiet. Fusce dignissim sed libero sit amet congue. Suspendisse consequat, augue et laoreet efficitur, lacus turpis accumsan magna, nec pellentesque sem augue a mauris. </string>
 </resources>

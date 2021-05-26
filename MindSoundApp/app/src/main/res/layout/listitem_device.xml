@@ -29,7 +29,8 @@
         android:id="@+id/device_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp" 
+        android:layout_marginLeft="10dp"
+        android:paddingBottom="10dp"
         android:gravity="center_vertical"
         android:layout_gravity="center"
         android:textSize="16sp"  />

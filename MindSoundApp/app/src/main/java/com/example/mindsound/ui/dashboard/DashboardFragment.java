@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,8 +50,8 @@ public class DashboardFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel =
                 new ViewModelProvider(this).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_log_in, container, false);
-        final ImageView select_device = root.findViewById(R.id.button);
+        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        final LinearLayout select_device = root.findViewById(R.id.lets_start_button);
         deviceListApapter = new BTDeviceListAdapter(getActivity());
 
         select_device.setOnClickListener(arg0 -> scanDevice());
