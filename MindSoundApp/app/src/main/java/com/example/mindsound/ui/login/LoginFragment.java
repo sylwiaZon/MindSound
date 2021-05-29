@@ -26,17 +26,27 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.volley.RequestQueue;
 import com.example.mindsound.MainActivity;
 import com.example.mindsound.MyApplication;
 import com.example.mindsound.R;
 import com.example.mindsound.ui.dashboard.BTDeviceListAdapter;
 import com.example.mindsound.ui.dashboard.DashboardViewModel;
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import java.util.Set;
 
 public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
+
+    private static final int REQUEST_CODE = 1337;
+
+    private static final String CLIENT_ID = "f2414b499d0646ef9306ebfe0aa5c511";
+
+    private static final String REDIRECT_URI = "https://mindwave.com/callback/";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,9 +56,17 @@ public class LoginFragment extends Fragment {
         final ImageView loginWithSpotify = root.findViewById(R.id.log_in_with_spotify_button);
 
         loginWithSpotify.setOnClickListener(n -> {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
+            loginWithSpotify();
         });
         return root;
+    }
+
+    private void loginWithSpotify(){
+        AuthorizationRequest.Builder builder =
+                new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI);
+        builder.setScopes(new String[]{"streaming"});
+        builder.setShowDialog(true);
+        AuthorizationRequest request = builder.build();
+        AuthorizationClient.openLoginActivity(getActivity(), REQUEST_CODE, request);
     }
 }
