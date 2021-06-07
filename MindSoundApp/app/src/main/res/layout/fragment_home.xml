@@ -136,7 +136,7 @@
                     android:fontFamily="@font/montserrat"
                     android:textColor="@color/white"
                     android:layout_marginTop="15dp"
-                    android:text="Skipping song if you do not ppreciate it." />
+                    android:text="Skipping song if you do not apreciate it." />
                 <TextView
                     android:id="@+id/blink_text_home_fragment"
                     android:layout_width="wrap_content"

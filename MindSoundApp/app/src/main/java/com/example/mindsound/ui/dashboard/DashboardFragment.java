@@ -31,6 +31,7 @@ import com.example.mindsound.MainActivity;
 import com.example.mindsound.MyApplication;
 import com.example.mindsound.R;
 import com.example.mindsound.ui.login.LoginViewModel;
+import com.example.mindsound.ui.player.PlayerActivity;
 
 import java.util.Set;
 
@@ -145,6 +146,8 @@ public class DashboardFragment extends Fragment {
 
             BluetoothDevice remoteDevice = mBluetoothAdapter.getRemoteDevice(mBluetoothDevice.getAddress().toString());
             dashboardViewModel.setmText(remoteDevice.getName());
+            Intent intent = new Intent(getActivity(), PlayerActivity.class);
+            getActivity().startActivity(intent);
         }
     };
 }
