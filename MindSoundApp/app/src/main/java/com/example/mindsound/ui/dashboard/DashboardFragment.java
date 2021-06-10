@@ -39,115 +39,17 @@ public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
 
-    private BluetoothAdapter mBluetoothAdapter;
-    private BTDeviceListAdapter deviceListApapter = null;
-
-    private BluetoothDevice mBluetoothDevice;
-    private ListView list_select;
-    private Dialog selectDialog;
-    private String address = null;
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel =
                 new ViewModelProvider(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        final LinearLayout select_device = root.findViewById(R.id.lets_start_button);
-        deviceListApapter = new BTDeviceListAdapter(getActivity());
+        final LinearLayout startButton = root.findViewById(R.id.lets_start_button);
 
-        select_device.setOnClickListener(arg0 -> scanDevice());
-
-        try {
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-                Toast.makeText(
-                        getActivity(),
-                        "Please enable your Bluetooth and re-run this program !",
-                        Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("Main", "error:" + e.getMessage());
-        }
-        return root;
-    }
-
-    public void scanDevice(){
-
-        if(mBluetoothAdapter.isDiscovering()){
-            mBluetoothAdapter.cancelDiscovery();
-        }
-
-        setUpDeviceListView();
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        getActivity().registerReceiver(mReceiver, filter);
-
-        mBluetoothAdapter.startDiscovery();
-    }
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                deviceListApapter.addDevice(device);
-                deviceListApapter.notifyDataSetChanged();
-
-            }
-        }
-    };
-
-    private void setUpDeviceListView(){
-
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View view = inflater.inflate(R.layout.dialog_select_device, null);
-        list_select = (ListView) view.findViewById(R.id.list_select);
-        selectDialog = new Dialog(getActivity());
-        selectDialog.setContentView(view);
-
-        deviceListApapter = new BTDeviceListAdapter(getActivity());
-        list_select.setAdapter(deviceListApapter);
-        list_select.setOnItemClickListener(selectDeviceItemClickListener);
-
-        selectDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-
-            @Override
-            public void onCancel(DialogInterface arg0) {
-                getActivity().unregisterReceiver(mReceiver);
-            }
-
-        });
-
-        selectDialog.show();
-
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        for(BluetoothDevice device: pairedDevices){
-            deviceListApapter.addDevice(device);
-        }
-        deviceListApapter.notifyDataSetChanged();
-    }
-
-    private AdapterView.OnItemClickListener selectDeviceItemClickListener = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-            if (mBluetoothAdapter.isDiscovering()) {
-                mBluetoothAdapter.cancelDiscovery();
-            }
-            getActivity().unregisterReceiver(mReceiver);
-
-            mBluetoothDevice = deviceListApapter.getDevice(arg2);
-            selectDialog.dismiss();
-            selectDialog = null;
-
-            address = mBluetoothDevice.getAddress().toString();
-            ((MyApplication) getActivity().getApplication()).setBluetoothDevice(mBluetoothDevice);
-
-            BluetoothDevice remoteDevice = mBluetoothAdapter.getRemoteDevice(mBluetoothDevice.getAddress().toString());
-            dashboardViewModel.setmText(remoteDevice.getName());
+        startButton.setOnClickListener(el -> {
             Intent intent = new Intent(getActivity(), PlayerActivity.class);
             getActivity().startActivity(intent);
-        }
-    };
+        });
+        return root;
+    }
 }

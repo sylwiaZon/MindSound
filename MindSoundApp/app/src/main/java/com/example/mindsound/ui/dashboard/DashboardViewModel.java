@@ -1,5 +1,7 @@
 package com.example.mindsound.ui.dashboard;
 
+import android.bluetooth.BluetoothDevice;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
