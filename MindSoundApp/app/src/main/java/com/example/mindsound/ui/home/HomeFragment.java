@@ -40,20 +40,11 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
 
-    private SharedPreferences msharedPreferences;
-
-    private SharedPreferences.Editor editor;
-
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-
-        msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
-        Log.d("HERE!!!!!!!", msharedPreferences.getString("token", ""));
-        Log.d("HERE!!!!!!!", ":(");
 
         return root;
     }
