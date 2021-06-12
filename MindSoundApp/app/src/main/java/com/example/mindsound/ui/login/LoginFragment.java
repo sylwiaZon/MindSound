@@ -1,30 +1,25 @@
 package com.example.mindsound.ui.login;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.mindsound.MainActivity;
 import com.example.mindsound.R;
 import com.example.mindsound.spotify.SpotifyService;
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
-
-    private final SpotifyService spotifyService = SpotifyService.getInstance();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -40,29 +35,15 @@ public class LoginFragment extends Fragment {
     }
 
     private void loginWithSpotify() {
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(SpotifyService.CLIENT_ID)
-                        .setRedirectUri(SpotifyService.REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
+        //autoryzacja
+        AuthorizationRequest.Builder builder =
+                new AuthorizationRequest.Builder(SpotifyService.CLIENT_ID, AuthorizationResponse.Type.TOKEN,SpotifyService.REDIRECT_URI);
+        builder.setScopes(new String[]{"streaming"});
+        builder.setShowDialog(true);
+        AuthorizationRequest request = builder.build();
+        AuthorizationClient.openLoginActivity(getActivity(), SpotifyService.REQUEST_CODE, request);
 
-        SpotifyAppRemote.connect(getActivity(), connectionParams,
-                new Connector.ConnectionListener() {
 
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        spotifyService.setmSpotifyAppRemote(spotifyAppRemote);
-                        Log.d("LOGIN", "Connected!");
-                        Intent intentMain = new Intent(getActivity(), MainActivity.class);
-                        startActivity(intentMain);
-                    }
 
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                        Toast.makeText(
-                                getActivity(),
-                                "Log in failed! Try again.",
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
     }
 }

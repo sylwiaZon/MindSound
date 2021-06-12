@@ -29,10 +29,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        SpotifyAppRemote.disconnect(SpotifyService.getInstance().getmSpotifyAppRemote());
-//    }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SpotifyAppRemote.disconnect(SpotifyService.getInstance().getmSpotifyAppRemote());
+    }
 }

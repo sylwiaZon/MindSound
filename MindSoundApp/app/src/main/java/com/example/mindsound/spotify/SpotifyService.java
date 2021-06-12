@@ -1,9 +1,14 @@
 package com.example.mindsound.spotify;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.types.Track;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class SpotifyService {
 
@@ -13,7 +18,19 @@ public class SpotifyService {
 
     public static final String REDIRECT_URI = "https://mindwave.com/callback/";
 
+    public static final int REQUEST_CODE = 1337;
+
     private final String examplePlaylist = "45cDCNOuzGklEGOGFfXkZ2";
+
+    private CallResult<Bitmap> albumImage;
+
+    private String artist;
+
+    private String song;
+
+    private String duration;
+
+    private Map<PlaylistTitles, String> playlists;
 
     private SpotifyAppRemote mSpotifyAppRemote;
 
@@ -33,34 +50,46 @@ public class SpotifyService {
     }
 
     public void playPlaylist(){
-            // Play a playlist
-            getmSpotifyAppRemote().getPlayerApi().play("spotify:playlist:" + examplePlaylist);
+        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + examplePlaylist);
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    final Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("TITLE", track.name + " by " + track.artist.name);
+                        setTrackInfo(track);
+                    }
+                });
+    }
 
-            // Subscribe to PlayerState
-            mSpotifyAppRemote.getPlayerApi()
-                    .subscribeToPlayerState()
-                    .setEventCallback(playerState -> {
-                        final Track track = playerState.track;
-                        if (track != null) {
-                            Log.d("TITLE", track.name + " by " + track.artist.name);
-                            Log.d("SONG", Long.toString(playerState.playbackPosition));
-                        }
-                    });
+    private void setTrackInfo(Track track) {
+        artist = track.artist.name;
+        song = track.name;
+        duration = String.format("%d:%d",
+                TimeUnit.MILLISECONDS.toMinutes(track.duration),
+                TimeUnit.MILLISECONDS.toSeconds(track.duration) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(track.duration))
+        );
+        albumImage = mSpotifyAppRemote.getImagesApi().getImage(track.imageUri);
     }
 
     public void nextSongInPlaylist() {
-        getmSpotifyAppRemote().getPlayerApi().skipNext();
+        mSpotifyAppRemote.getPlayerApi().skipNext();
     }
 
     public void previousSongInPlaylist() {
-        getmSpotifyAppRemote().getPlayerApi().skipPrevious();
+        mSpotifyAppRemote.getPlayerApi().skipPrevious();
     }
 
     public void stopSongInPlaylist() {
-        getmSpotifyAppRemote().getPlayerApi().pause();
+        mSpotifyAppRemote.getPlayerApi().pause();
     }
 
     public void resumeSongInPlaylist() {
-        getmSpotifyAppRemote().getPlayerApi().resume();
+        mSpotifyAppRemote.getPlayerApi().resume();
     }
+
+    public void createPlaylistsBasedOnMood(){}
+
+
 }

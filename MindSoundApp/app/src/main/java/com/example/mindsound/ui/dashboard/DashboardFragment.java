@@ -1,39 +1,23 @@
 package com.example.mindsound.ui.dashboard;
 
-import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.mindsound.MainActivity;
-import com.example.mindsound.MyApplication;
 import com.example.mindsound.R;
-import com.example.mindsound.ui.login.LoginViewModel;
+import com.example.mindsound.spotify.SpotifyService;
 import com.example.mindsound.ui.player.PlayerActivity;
-
-import java.util.Set;
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 public class DashboardFragment extends Fragment {
 
@@ -45,11 +29,30 @@ public class DashboardFragment extends Fragment {
                 new ViewModelProvider(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         final LinearLayout startButton = root.findViewById(R.id.lets_start_button);
-
-        startButton.setOnClickListener(el -> {
-            Intent intent = new Intent(getActivity(), PlayerActivity.class);
-            getActivity().startActivity(intent);
-        });
+        startButton.setOnClickListener(el -> getSpotifyAppRemote());
         return root;
+    }
+
+    private void getSpotifyAppRemote(){
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(SpotifyService.CLIENT_ID)
+                        .setRedirectUri(SpotifyService.REDIRECT_URI)
+                        .showAuthView(true)
+                        .build();
+
+        SpotifyAppRemote.disconnect(SpotifyService.getInstance().getmSpotifyAppRemote());
+        SpotifyAppRemote.connect(getActivity(), connectionParams,
+                new Connector.ConnectionListener() {
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        SpotifyService.getInstance().setmSpotifyAppRemote(spotifyAppRemote);
+                        Log.d("SPOTIFY PLAYER", "Connected!");
+                        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                        getActivity().startActivity(intent);
+                    }
+
+                    public void onFailure(Throwable throwable) {
+                        Log.d("SPOTIFY PLAYER", throwable.getMessage(), throwable);
+                    }
+                });
     }
 }

@@ -26,6 +26,7 @@ import com.github.pwittchen.neurosky.library.message.enums.Signal;
 import com.github.pwittchen.neurosky.library.message.enums.State;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import java.math.BigInteger;
 import java.util.Locale;
@@ -106,22 +107,36 @@ public class PlayerFragment extends Fragment {
         playSongButton = root.findViewById(R.id.play_player);
         playSongButton.setOnClickListener(el -> {
             // pause song
-            spotifyService.stopSongInPlaylist();
+            spotifyService.resumeSongInPlaylist();
             pauseSongButton.setVisibility(View.VISIBLE);
             playSongButton.setVisibility(View.INVISIBLE);
         });
         pauseSongButton = root.findViewById(R.id.pause_player);
         pauseSongButton.setOnClickListener(el -> {
             // play song
-            spotifyService.resumeSongInPlaylist();
+            spotifyService.stopSongInPlaylist();
             playSongButton.setVisibility(View.VISIBLE);
             pauseSongButton.setVisibility(View.INVISIBLE);
         });
+        playSongButton.setVisibility(View.INVISIBLE);
+        pauseSongButton.setVisibility(View.VISIBLE);
         neuroSky.connect();
         neuroSky.startMonitoring();
         attentionMeasures = BigInteger.valueOf(0);
         attentionMeasuresCount = 0;
         return root;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        spotifyService.stopSongInPlaylist();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        spotifyService.resumeSongInPlaylist();
     }
 
     @NonNull private NeuroSky createNeuroSky() {
