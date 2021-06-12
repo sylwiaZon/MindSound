@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mindsound.R;
+import com.example.mindsound.spotify.SpotifyService;
 import com.github.pwittchen.neurosky.library.NeuroSky;
 import com.github.pwittchen.neurosky.library.listener.ExtendedDeviceMessageListener;
 import com.github.pwittchen.neurosky.library.message.enums.BrainWave;
@@ -52,6 +53,8 @@ public class PlayerFragment extends Fragment {
 
     private PlayerViewModel playerViewModel;
 
+    private final SpotifyService spotifyService = SpotifyService.getInstance();
+
     private BigInteger attentionMeasures;
     private int attentionMeasuresCount;
     private int measuredAttentionLevel;
@@ -71,6 +74,7 @@ public class PlayerFragment extends Fragment {
                 new ViewModelProvider(this).get(PlayerViewModel.class);
 
         ButterKnife.bind(getActivity());
+        spotifyService.playPlaylist();
         neuroSky = createNeuroSky();
         sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         moodText = root.findViewById(R.id.mood_text_player);
@@ -87,26 +91,29 @@ public class PlayerFragment extends Fragment {
         wholeTime = root.findViewById(R.id.whole_time_player);
         previousSongButton = root.findViewById(R.id.previus_player);
         previousSongButton.setOnClickListener(el -> {
-            //zmieniamy piosenkę
+            spotifyService.previousSongInPlaylist();
             attentionMeasuresCount = 0;
             attentionMeasures= BigInteger.valueOf(0);
         });
         nextSongButton = root.findViewById(R.id.next_player);
         nextSongButton.setOnClickListener(el -> {
             //zmieniamy piosenkę
-            changeSong();
+            spotifyService.nextSongInPlaylist();
+//            changeSong();
             attentionMeasuresCount = 0;
             attentionMeasures= BigInteger.valueOf(0);
         });
         playSongButton = root.findViewById(R.id.play_player);
         playSongButton.setOnClickListener(el -> {
             // pause song
+            spotifyService.stopSongInPlaylist();
             pauseSongButton.setVisibility(View.VISIBLE);
             playSongButton.setVisibility(View.INVISIBLE);
         });
         pauseSongButton = root.findViewById(R.id.pause_player);
         pauseSongButton.setOnClickListener(el -> {
             // play song
+            spotifyService.resumeSongInPlaylist();
             playSongButton.setVisibility(View.VISIBLE);
             pauseSongButton.setVisibility(View.INVISIBLE);
         });
@@ -150,7 +157,8 @@ public class PlayerFragment extends Fragment {
                 // następna piosenka
                 String isBlinkEnabled = sharedPref.getString(getString(R.string.blink_detection_preference), "On");
                 if(isBlinkEnabled.equals("On") && signal.getValue() > 80) {
-                    changeSong();
+                    spotifyService.nextSongInPlaylist();
+//                    changeSong();
                 }
                 Log.d("MindWave", String.format("blink: %d", signal.getValue()));
                 break;

@@ -24,12 +24,10 @@ public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
 
-    private SpotifyService spotifyService;
+    private final SpotifyService spotifyService = SpotifyService.getInstance();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        spotifyService = new SpotifyService();
         loginViewModel =
                 new ViewModelProvider(this).get(LoginViewModel.class);
         View root = inflater.inflate(R.layout.fragment_log_in, container, false);
@@ -39,12 +37,6 @@ public class LoginFragment extends Fragment {
             loginWithSpotify();
         });
         return root;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        SpotifyAppRemote.disconnect(spotifyService.getmSpotifyAppRemote());
     }
 
     private void loginWithSpotify() {
