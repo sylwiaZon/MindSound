@@ -2,7 +2,6 @@ package com.example.mindsound.spotify.models;
 
 public class Playlist {
     private String id;
-    private String imageURL;
     private String name;
 
 

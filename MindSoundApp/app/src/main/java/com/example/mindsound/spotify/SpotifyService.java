@@ -3,11 +3,13 @@ package com.example.mindsound.spotify;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.example.mindsound.spotify.models.Playlist;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.types.Track;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class SpotifyService {
@@ -20,8 +22,6 @@ public class SpotifyService {
 
     public static final int REQUEST_CODE = 1337;
 
-    private final String examplePlaylist = "45cDCNOuzGklEGOGFfXkZ2";
-
     private CallResult<Bitmap> albumImage;
 
     private String artist;
@@ -30,9 +30,11 @@ public class SpotifyService {
 
     private String duration;
 
-    private Map<PlaylistTitles, String> playlists;
+    private HashMap<PlaylistTitle, String> moodPlaylists = new HashMap<>();
 
     private SpotifyAppRemote mSpotifyAppRemote;
+
+    private PlaylistTitle current;
 
     public static SpotifyService getInstance() {
         if (instance == null) {
@@ -49,8 +51,17 @@ public class SpotifyService {
         this.mSpotifyAppRemote = mSpotifyAppRemote;
     }
 
+    public void setCurrent(PlaylistTitle current){
+        this.current = current;
+    }
+
+    public PlaylistTitle getCurrent(){
+        return current;
+    }
+
     public void playPlaylist(){
-        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + examplePlaylist);
+        current = PlaylistTitle.HAPPY;
+        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + moodPlaylists.get(current));
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
@@ -60,6 +71,13 @@ public class SpotifyService {
                         setTrackInfo(track);
                     }
                 });
+    }
+
+    public void changePlaylist(PlaylistTitle title){
+        current = title;
+        Log.d("PLAYLIST CHANGED",  moodPlaylists.get(title));
+
+        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + moodPlaylists.get(title));
     }
 
     private void setTrackInfo(Track track) {
@@ -89,7 +107,15 @@ public class SpotifyService {
         mSpotifyAppRemote.getPlayerApi().resume();
     }
 
-    public void createPlaylistsBasedOnMood(){}
-
-
+    public boolean createPlaylistsBasedOnMood(ArrayList<Playlist> playlists){
+        PlaylistTitle[] titles = PlaylistTitle.values();
+        for (PlaylistTitle title : titles) {
+            for(Playlist playlist : playlists){
+                if (playlist.getName().equals(title.name())){
+                    moodPlaylists.put(title, playlist.getId());
+                }
+            }
+        }
+        return titles.length == moodPlaylists.size();
+    }
 }

@@ -76,6 +76,10 @@ public class LoginActivity extends AppCompatActivity {
         PlaylistService playlistService = new PlaylistService(queue, this.getSharedPreferences("SPOTIFY", 0));
         playlistService.get(() -> {
             Log.d("STARTING", "GOT PLAYLISTS INFORMATION");
+            boolean createdPlaylists = SpotifyService.getInstance().createPlaylistsBasedOnMood(playlistService.getPlaylists());
+            if (createdPlaylists){
+                Log.d("PLAYLISTS!", "Not enough playlists");
+            }
             Intent intentMain = new Intent(this, MainActivity.class);
             startActivity(intentMain);
         });

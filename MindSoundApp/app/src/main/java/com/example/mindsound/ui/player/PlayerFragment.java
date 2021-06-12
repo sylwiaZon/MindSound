@@ -2,7 +2,6 @@ package com.example.mindsound.ui.player;
 
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -18,15 +17,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mindsound.R;
+import com.example.mindsound.spotify.PlaylistTitle;
 import com.example.mindsound.spotify.SpotifyService;
 import com.github.pwittchen.neurosky.library.NeuroSky;
 import com.github.pwittchen.neurosky.library.listener.ExtendedDeviceMessageListener;
 import com.github.pwittchen.neurosky.library.message.enums.BrainWave;
 import com.github.pwittchen.neurosky.library.message.enums.Signal;
 import com.github.pwittchen.neurosky.library.message.enums.State;
-import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.slider.Slider;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import java.math.BigInteger;
 import java.util.Locale;
@@ -73,7 +71,6 @@ public class PlayerFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_player, container, false);
         playerViewModel =
                 new ViewModelProvider(this).get(PlayerViewModel.class);
-
         ButterKnife.bind(getActivity());
         spotifyService.playPlaylist();
         neuroSky = createNeuroSky();
@@ -99,8 +96,7 @@ public class PlayerFragment extends Fragment {
         nextSongButton = root.findViewById(R.id.next_player);
         nextSongButton.setOnClickListener(el -> {
             //zmieniamy piosenkę
-            spotifyService.nextSongInPlaylist();
-//            changeSong();
+            changeSong();
             attentionMeasuresCount = 0;
             attentionMeasures= BigInteger.valueOf(0);
         });
@@ -172,8 +168,7 @@ public class PlayerFragment extends Fragment {
                 // następna piosenka
                 String isBlinkEnabled = sharedPref.getString(getString(R.string.blink_detection_preference), "On");
                 if(isBlinkEnabled.equals("On") && signal.getValue() > 80) {
-                    spotifyService.nextSongInPlaylist();
-//                    changeSong();
+                    changeSong();
                 }
                 Log.d("MindWave", String.format("blink: %d", signal.getValue()));
                 break;
@@ -191,69 +186,32 @@ public class PlayerFragment extends Fragment {
     }
 
     private void changeSong() {
+        PlaylistTitle title;
         String matchMood = sharedPref.getString(getString(R.string.match_mood_preference), "Yes");
-        float valence_low, valence_high;
-        float danceability_low, danceability_high;
-        float energy_low, energy_high;
         measuredAttentionLevel = attentionMeasures.divide(BigInteger.valueOf(attentionMeasuresCount)).intValue() / 100;
 
         float moodLevelValue = matchMood.equals("Yes")
                 ?  moodLevel.getValue()
                 : 1 - moodLevel.getValue();
-        if (moodLevelValue < 0.1) {
-            valence_low = 0;
-            valence_high = (float)(moodLevelValue + 0.15);
-        } else if (moodLevelValue < 0.25) {
-            valence_low = (float)(moodLevelValue - 0.075);
-            valence_high = (float)(moodLevelValue + - 0.075);
-        } else if (moodLevelValue < 0.50) {
-            valence_low = (float)(moodLevelValue - 0.05);
-            valence_high = (float)(moodLevelValue + - 0.05);
-        } else if (moodLevelValue < 0.75) {
-            valence_low = (float)(moodLevelValue - 0.075);
-            valence_high = (float)(moodLevelValue + - 0.075);
-        } else if (moodLevelValue < 0.90) {
-            valence_low = (float)(moodLevelValue - 0.075);
-            valence_high = (float)(moodLevelValue + - 0.075);
+        if (moodLevelValue < 0.5) {
+            title = PlaylistTitle.SAD;
         } else {
-            valence_low = (float)(moodLevelValue - 0.15);
-            valence_high = 1;
+            title = PlaylistTitle.HAPPY;
         }
-
 
         measuredAttentionLevel = matchMood.equals("Yes")
                 ?  measuredAttentionLevel
                 : 1 - measuredAttentionLevel;
-        if (measuredAttentionLevel < 0.1) {
-            danceability_low = 0;
-            danceability_high = (float)(measuredAttentionLevel + 0.15);
-            energy_low = 0;
-            energy_high = (float)(measuredAttentionLevel + 0.15);
-        } else if (measuredAttentionLevel < 0.25) {
-            danceability_low = (float)(measuredAttentionLevel - 0.075);
-            danceability_high = (float)(measuredAttentionLevel + - 0.075);
-            energy_low = (float)(measuredAttentionLevel - 0.075);
-            energy_high = (float)(measuredAttentionLevel + - 0.075);
-        } else if (measuredAttentionLevel < 0.50) {
-            danceability_low = (float)(measuredAttentionLevel - 0.05);
-            danceability_high = (float)(measuredAttentionLevel + - 0.05);
-            energy_low = (float)(measuredAttentionLevel - 0.05);
-            energy_high = (float)(measuredAttentionLevel + - 0.05);
-        } else if (measuredAttentionLevel < 0.75) {
-            danceability_low = (float)(measuredAttentionLevel - 0.075);
-            danceability_high = (float)(measuredAttentionLevel + - 0.075);
-            energy_low = (float)(measuredAttentionLevel - 0.075);
-            energy_high = (float)(measuredAttentionLevel + - 0.075);
-        } else if (measuredAttentionLevel < 0.90) {
-            danceability_low = (float)(measuredAttentionLevel - 0.075);
-            danceability_high = (float)(measuredAttentionLevel + - 0.075);
-            energy_low = (float)(measuredAttentionLevel - 0.075);
-            energy_high = (float)(measuredAttentionLevel + - 0.075);
-        } else {
-            danceability_low = (float)(measuredAttentionLevel - 0.15);
-            danceability_high = 1;
-            energy_low = (float)(measuredAttentionLevel - 0.15);
-            energy_high = 1;
+        if (measuredAttentionLevel > 0.5 && moodLevelValue < 0.5) {
+            title = PlaylistTitle.SAD_CONCENTRATION;
         }
+        else if(measuredAttentionLevel > 0.5 && moodLevelValue > 0.5){
+            title = PlaylistTitle.HAPPY_CONCENTRATION;
+        }
+        if (spotifyService.getCurrent() == title){
+            spotifyService.nextSongInPlaylist();
+        }
+        Log.d("!!!!!!!!!!!!!!!!!!!!!!!", title.toString());
+        spotifyService.changePlaylist(title);
     }
 }

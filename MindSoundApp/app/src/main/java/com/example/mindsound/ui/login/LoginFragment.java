@@ -1,6 +1,5 @@
 package com.example.mindsound.ui.login;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,13 +36,10 @@ public class LoginFragment extends Fragment {
     private void loginWithSpotify() {
         //autoryzacja
         AuthorizationRequest.Builder builder =
-                new AuthorizationRequest.Builder(SpotifyService.CLIENT_ID, AuthorizationResponse.Type.TOKEN,SpotifyService.REDIRECT_URI);
+                new AuthorizationRequest.Builder(SpotifyService.CLIENT_ID, AuthorizationResponse.Type.TOKEN, SpotifyService.REDIRECT_URI);
         builder.setScopes(new String[]{"streaming"});
         builder.setShowDialog(true);
         AuthorizationRequest request = builder.build();
         AuthorizationClient.openLoginActivity(getActivity(), SpotifyService.REQUEST_CODE, request);
-
-
-
     }
 }

@@ -1,8 +1,6 @@
 package com.example.mindsound.spotify;
 
 import android.content.SharedPreferences;
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,8 +20,11 @@ import java.util.Map;
 public class PlaylistService {
 
     private static final String ENDPOINT = "https://api.spotify.com/v1/me/playlists";
+
     private SharedPreferences msharedPreferences;
+
     private RequestQueue mqueue;
+
     private ArrayList<Playlist> playlists = new ArrayList<>();
 
     public PlaylistService(RequestQueue queue, SharedPreferences sharedPreferences) {
@@ -48,7 +49,6 @@ public class PlaylistService {
                     }
                 }
                 callBack.onSuccess();
-                selectMoodPlaylists();
             }
         }, error -> get(() -> {
         })) {
@@ -65,8 +65,7 @@ public class PlaylistService {
         mqueue.add(jsonObjectRequest);
     }
 
-    private void selectMoodPlaylists(){
-        Log.d("PLAYLIST", playlists.get(0).getId());
-
+    public ArrayList<Playlist> getPlaylists(){
+        return playlists;
     }
 }
