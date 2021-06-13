@@ -25,6 +25,7 @@ import com.github.pwittchen.neurosky.library.message.enums.BrainWave;
 import com.github.pwittchen.neurosky.library.message.enums.Signal;
 import com.github.pwittchen.neurosky.library.message.enums.State;
 import com.google.android.material.slider.Slider;
+import com.spotify.protocol.types.Track;
 
 import java.math.BigInteger;
 import java.util.Locale;
@@ -72,14 +73,20 @@ public class PlayerFragment extends Fragment {
         playerViewModel =
                 new ViewModelProvider(this).get(PlayerViewModel.class);
         ButterKnife.bind(getActivity());
-        spotifyService.playPlaylist();
+        spotifyService.playPlaylist(new SpotifyService.PlaylistListener() {
+            @Override
+            public void trackPlayed(Track track) {
+                songNameText.setText(track.name);
+            }
+        });
         neuroSky = createNeuroSky();
         sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         moodText = root.findViewById(R.id.mood_text_player);
         moodLevel = root.findViewById(R.id.mood_level_player);
-        moodLevel.setStepSize(1/6);
+        moodLevel.setStepSize(1.0f/6.0f);
         moodLevel.setValueFrom(0);
         moodLevel.setValueTo(1);
+        moodLevel.setValue(1);
         attentionLevelText = root.findViewById(R.id.state_text_player);
         attentionLevel = root.findViewById(R.id.state_level_player);
         cover = root.findViewById(R.id.song_cover_player);

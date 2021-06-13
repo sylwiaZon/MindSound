@@ -59,7 +59,11 @@ public class SpotifyService {
         return current;
     }
 
-    public void playPlaylist(){
+    public interface PlaylistListener {
+        void trackPlayed(Track track);
+    }
+
+    public void playPlaylist(PlaylistListener listener){
         current = PlaylistTitle.HAPPY;
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + moodPlaylists.get(current));
         mSpotifyAppRemote.getPlayerApi()
@@ -69,6 +73,7 @@ public class SpotifyService {
                     if (track != null) {
                         Log.d("TITLE", track.name + " by " + track.artist.name);
                         setTrackInfo(track);
+                        listener.trackPlayed(track);
                     }
                 });
     }
