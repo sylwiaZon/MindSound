@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mindsound.R;
 import com.example.mindsound.spotify.PlaylistTitle;
@@ -77,6 +78,10 @@ public class PlayerFragment extends Fragment {
             @Override
             public void trackPlayed(Track track) {
                 songNameText.setText(track.name);
+                authorText.setText(track.artist.name);
+                spotifyService.getmSpotifyAppRemote().getImagesApi().getImage(track.imageUri).setResultCallback(el -> {
+                    cover.setImageBitmap(el);
+                });
             }
         });
         neuroSky = createNeuroSky();
@@ -92,8 +97,6 @@ public class PlayerFragment extends Fragment {
         cover = root.findViewById(R.id.song_cover_player);
         authorText = root.findViewById(R.id.author_name_player);
         songNameText = root.findViewById(R.id.song_name_player);
-        currentTime = root.findViewById(R.id.current_time_player);
-        wholeTime = root.findViewById(R.id.whole_time_player);
         previousSongButton = root.findViewById(R.id.previus_player);
         previousSongButton.setOnClickListener(el -> {
             spotifyService.previousSongInPlaylist();
@@ -174,7 +177,11 @@ public class PlayerFragment extends Fragment {
             case BLINK:
                 // następna piosenka
                 String isBlinkEnabled = sharedPref.getString(getString(R.string.blink_detection_preference), "On");
-                if(isBlinkEnabled.equals("On") && signal.getValue() > 80) {
+                if(isBlinkEnabled.equals("On") && signal.getValue() > 90) {
+                    Toast.makeText(
+                            getActivity(),
+                            "Blink detected",
+                            Toast.LENGTH_LONG).show();
                     changeSong();
                 }
                 Log.d("MindWave", String.format("blink: %d", signal.getValue()));
