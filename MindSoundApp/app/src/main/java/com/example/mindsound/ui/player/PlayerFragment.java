@@ -58,7 +58,7 @@ public class PlayerFragment extends Fragment {
 
     private BigInteger attentionMeasures;
     private int attentionMeasuresCount;
-    private int measuredAttentionLevel;
+    private float measuredAttentionLevel;
 
     public static PlayerFragment newInstance() {
         return new PlayerFragment();
@@ -177,7 +177,11 @@ public class PlayerFragment extends Fragment {
             case BLINK:
                 // następna piosenka
                 String isBlinkEnabled = sharedPref.getString(getString(R.string.blink_detection_preference), "On");
-                if(isBlinkEnabled.equals("On") && signal.getValue() > 90) {
+                Toast.makeText(
+                        getActivity(),
+                        getFormattedMessage(signal),
+                        Toast.LENGTH_LONG).show();
+                if(isBlinkEnabled.equals("On") && signal.getValue() > 85) {
                     Toast.makeText(
                             getActivity(),
                             "Blink detected",
@@ -202,8 +206,9 @@ public class PlayerFragment extends Fragment {
     private void changeSong() {
         PlaylistTitle title;
         String matchMood = sharedPref.getString(getString(R.string.match_mood_preference), "Yes");
-        measuredAttentionLevel = attentionMeasures.divide(BigInteger.valueOf(attentionMeasuresCount)).intValue() / 100;
-
+        measuredAttentionLevel = attentionMeasuresCount != 0
+                ? attentionMeasures.divide(BigInteger.valueOf(attentionMeasuresCount)).floatValue() / 100
+                : 0;
         float moodLevelValue = matchMood.equals("Yes")
                 ?  moodLevel.getValue()
                 : 1 - moodLevel.getValue();
@@ -222,10 +227,14 @@ public class PlayerFragment extends Fragment {
         else if(measuredAttentionLevel > 0.5 && moodLevelValue > 0.5){
             title = PlaylistTitle.HAPPY_CONCENTRATION;
         }
+
+
         if (spotifyService.getCurrent() == title){
             spotifyService.nextSongInPlaylist();
         }
-        Log.d("!!!!!!!!!!!!!!!!!!!!!!!", title.toString());
-        spotifyService.changePlaylist(title);
+        else {
+            spotifyService.changePlaylist(title);
+        }
+        Log.d("PLAYLIST TITLE", title.toString());
     }
 }
