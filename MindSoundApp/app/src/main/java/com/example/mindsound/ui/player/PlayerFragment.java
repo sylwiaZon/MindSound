@@ -1,8 +1,10 @@
 package com.example.mindsound.ui.player;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -50,7 +52,6 @@ public class PlayerFragment extends Fragment {
     private ImageView previousSongButton;
     private ImageView nextSongButton;
     private ImageView playSongButton;
-    private ImageView pauseSongButton;
 
     private PlayerViewModel playerViewModel;
 
@@ -59,6 +60,8 @@ public class PlayerFragment extends Fragment {
     private BigInteger attentionMeasures;
     private int attentionMeasuresCount;
     private int measuredAttentionLevel;
+
+    private boolean isPlay = false;
 
     public static PlayerFragment newInstance() {
         return new PlayerFragment();
@@ -113,24 +116,27 @@ public class PlayerFragment extends Fragment {
         playSongButton = root.findViewById(R.id.play_player);
         playSongButton.setOnClickListener(el -> {
             // pause song
+            Drawable myDrawable;
+            myDrawable = isPlay
+                    ? ResourcesCompat.getDrawable(getResources(),
+                        R.drawable.ic_baseline_play_arrow_24, null)
+                    : ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.ic_baseline_pause_24, null);
+            playSongButton.setImageDrawable(myDrawable);
+            isPlay = !isPlay;
             spotifyService.resumeSongInPlaylist();
-            pauseSongButton.setVisibility(View.VISIBLE);
-            playSongButton.setVisibility(View.INVISIBLE);
         });
-        pauseSongButton = root.findViewById(R.id.pause_player);
-        pauseSongButton.setOnClickListener(el -> {
-            // play song
-            spotifyService.stopSongInPlaylist();
-            playSongButton.setVisibility(View.VISIBLE);
-            pauseSongButton.setVisibility(View.INVISIBLE);
-        });
-        playSongButton.setVisibility(View.INVISIBLE);
-        pauseSongButton.setVisibility(View.VISIBLE);
         neuroSky.connect();
         neuroSky.startMonitoring();
         attentionMeasures = BigInteger.valueOf(0);
         attentionMeasuresCount = 0;
         return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        spotifyService.stopSongInPlaylist();
     }
 
     @Override

@@ -36,7 +36,7 @@ public class SettingsFragment extends Fragment {
         final LinearLayout playlistButton = root.findViewById(R.id.playlist_button);
         SharedPreferences sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-
+        blinkText.setText("On");
         blinkButton.setOnClickListener(n -> {
             if (blinkText.getText() == "On") {
                 blinkText.setText("Off");

@@ -185,19 +185,11 @@
                 android:src="@drawable/ic_baseline_play_arrow_24" />
 
             <ImageView
-                android:id="@+id/pause_player"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_baseline_pause_24"
-                android:visibility="gone" />
-
-            <ImageView
                 android:id="@+id/next_player"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_baseline_play_arrow_24" />
+                android:src="@drawable/ic_baseline_skip_next_24" />
         </LinearLayout>
 
 
