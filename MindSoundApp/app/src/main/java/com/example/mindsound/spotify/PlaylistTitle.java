@@ -7,6 +7,8 @@ public enum PlaylistTitle {
 //    ECSTATIC,
 //    MELANCHOLY_CONCENTRATION,
 //    MELANCHOLY,
+    MEGA_SAD,
+    MEGA_HAPPY,
     SAD_CONCENTRATION,
     SAD
 }

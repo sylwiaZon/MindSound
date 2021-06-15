@@ -30,13 +30,12 @@ public class SettingsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
         final TextView blinkText = root.findViewById(R.id.blink_detection_text);
         final TextView matchMoodText = root.findViewById(R.id.match_mood_text);
-        final TextView playlistText = root.findViewById(R.id.playlist_text);
         final LinearLayout blinkButton = root.findViewById(R.id.blink_detection_button);
         final LinearLayout matchMoodButton = root.findViewById(R.id.match_mood_button);
-        final LinearLayout playlistButton = root.findViewById(R.id.playlist_button);
         SharedPreferences sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         blinkText.setText("On");
+        editor.putString(getString(R.string.blink_detection_preference), "On");
         blinkButton.setOnClickListener(n -> {
             if (blinkText.getText() == "On") {
                 blinkText.setText("Off");

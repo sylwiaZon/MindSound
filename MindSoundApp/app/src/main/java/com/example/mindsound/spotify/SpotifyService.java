@@ -22,14 +22,6 @@ public class SpotifyService {
 
     public static final int REQUEST_CODE = 1337;
 
-    private CallResult<Bitmap> albumImage;
-
-    private String artist;
-
-    private String song;
-
-    private String duration;
-
     private HashMap<PlaylistTitle, String> moodPlaylists = new HashMap<>();
 
     private SpotifyAppRemote mSpotifyAppRemote;
@@ -64,7 +56,7 @@ public class SpotifyService {
     }
 
     public void playPlaylist(PlaylistListener listener){
-        current = PlaylistTitle.HAPPY;
+        current = PlaylistTitle.MEGA_HAPPY;
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + moodPlaylists.get(current));
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
@@ -72,7 +64,6 @@ public class SpotifyService {
                     final Track track = playerState.track;
                     if (track != null) {
                         Log.d("TITLE", track.name + " by " + track.artist.name);
-                        setTrackInfo(track);
                         listener.trackPlayed(track);
                     }
                 });
@@ -81,19 +72,7 @@ public class SpotifyService {
     public void changePlaylist(PlaylistTitle title){
         current = title;
         Log.d("PLAYLIST CHANGED",  moodPlaylists.get(title));
-
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:" + moodPlaylists.get(title));
-    }
-
-    private void setTrackInfo(Track track) {
-        artist = track.artist.name;
-        song = track.name;
-        duration = String.format("%d:%d",
-                TimeUnit.MILLISECONDS.toMinutes(track.duration),
-                TimeUnit.MILLISECONDS.toSeconds(track.duration) -
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(track.duration))
-        );
-        albumImage = mSpotifyAppRemote.getImagesApi().getImage(track.imageUri);
     }
 
     public void nextSongInPlaylist() {

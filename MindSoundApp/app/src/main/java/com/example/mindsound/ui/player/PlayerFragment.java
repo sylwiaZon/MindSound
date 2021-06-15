@@ -59,7 +59,7 @@ public class PlayerFragment extends Fragment {
 
     private BigInteger attentionMeasures;
     private int attentionMeasuresCount;
-    private int measuredAttentionLevel;
+    private float measuredAttentionLevel;
 
     private boolean isPlay = false;
 
@@ -77,16 +77,6 @@ public class PlayerFragment extends Fragment {
         playerViewModel =
                 new ViewModelProvider(this).get(PlayerViewModel.class);
         ButterKnife.bind(getActivity());
-        spotifyService.playPlaylist(new SpotifyService.PlaylistListener() {
-            @Override
-            public void trackPlayed(Track track) {
-                songNameText.setText(track.name);
-                authorText.setText(track.artist.name);
-                spotifyService.getmSpotifyAppRemote().getImagesApi().getImage(track.imageUri).setResultCallback(el -> {
-                    cover.setImageBitmap(el);
-                });
-            }
-        });
         neuroSky = createNeuroSky();
         sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
         moodText = root.findViewById(R.id.mood_text_player);
@@ -116,26 +106,36 @@ public class PlayerFragment extends Fragment {
         playSongButton = root.findViewById(R.id.play_player);
         playSongButton.setOnClickListener(el -> {
             // pause song
-            Drawable myDrawable;
-            myDrawable = isPlay
-                    ? ResourcesCompat.getDrawable(getResources(),
-                        R.drawable.ic_baseline_play_arrow_24, null)
-                    : ResourcesCompat.getDrawable(getResources(),
-                    R.drawable.ic_baseline_pause_24, null);
-            playSongButton.setImageDrawable(myDrawable);
+            if(isPlay) {
+                playSongButton.setImageResource(R.drawable.ic_baseline_pause_24);
+                spotifyService.resumeSongInPlaylist();
+            } else {
+                playSongButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                spotifyService.stopSongInPlaylist();
+            }
             isPlay = !isPlay;
-            spotifyService.resumeSongInPlaylist();
         });
         neuroSky.connect();
         neuroSky.startMonitoring();
         attentionMeasures = BigInteger.valueOf(0);
         attentionMeasuresCount = 0;
+        spotifyService.playPlaylist(new SpotifyService.PlaylistListener() {
+            @Override
+            public void trackPlayed(Track track) {
+                songNameText.setText(track.name);
+                authorText.setText(track.artist.name);
+                spotifyService.getmSpotifyAppRemote().getImagesApi().getImage(track.imageUri).setResultCallback(el -> {
+                    cover.setImageBitmap(el);
+                });
+            }
+        });
         return root;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        neuroSky.disconnect();
         spotifyService.stopSongInPlaylist();
     }
 
@@ -174,6 +174,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void handleSignalChange(final Signal signal) {
+
         switch (signal) {
             case ATTENTION:
                 attentionLevel.setText(getFormattedMessage(signal));
@@ -183,7 +184,7 @@ public class PlayerFragment extends Fragment {
             case BLINK:
                 // następna piosenka
                 String isBlinkEnabled = sharedPref.getString(getString(R.string.blink_detection_preference), "On");
-                if(isBlinkEnabled.equals("On") && signal.getValue() > 90) {
+                if(isBlinkEnabled.equals("On") && signal.getValue() > 80) {
                     Toast.makeText(
                             getActivity(),
                             "Blink detected",
@@ -208,30 +209,37 @@ public class PlayerFragment extends Fragment {
     private void changeSong() {
         PlaylistTitle title;
         String matchMood = sharedPref.getString(getString(R.string.match_mood_preference), "Yes");
-        measuredAttentionLevel = attentionMeasures.divide(BigInteger.valueOf(attentionMeasuresCount)).intValue() / 100;
-
+        measuredAttentionLevel = attentionMeasuresCount != 0
+                ? attentionMeasures.divide(BigInteger.valueOf(attentionMeasuresCount)).floatValue() / 100
+                : 0;
         float moodLevelValue = matchMood.equals("Yes")
                 ?  moodLevel.getValue()
                 : 1 - moodLevel.getValue();
-        if (moodLevelValue < 0.5) {
+        if (moodLevelValue < 0.2) {
+            title = PlaylistTitle.MEGA_SAD;
+        } else if (moodLevelValue < 0.5) {
             title = PlaylistTitle.SAD;
-        } else {
+        } else if (moodLevelValue < 0.8) {
             title = PlaylistTitle.HAPPY;
         }
+        else {
+            title = PlaylistTitle.MEGA_HAPPY;
+        }
 
-        measuredAttentionLevel = matchMood.equals("Yes")
-                ?  measuredAttentionLevel
-                : 1 - measuredAttentionLevel;
         if (measuredAttentionLevel > 0.5 && moodLevelValue < 0.5) {
             title = PlaylistTitle.SAD_CONCENTRATION;
         }
         else if(measuredAttentionLevel > 0.5 && moodLevelValue > 0.5){
             title = PlaylistTitle.HAPPY_CONCENTRATION;
         }
+
+
         if (spotifyService.getCurrent() == title){
             spotifyService.nextSongInPlaylist();
         }
-        Log.d("!!!!!!!!!!!!!!!!!!!!!!!", title.toString());
-        spotifyService.changePlaylist(title);
+        else {
+            spotifyService.changePlaylist(title);
+        }
+        Log.d("PLAYLIST TITLE", title.toString());
     }
 }

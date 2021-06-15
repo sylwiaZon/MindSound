@@ -115,52 +115,5 @@
                     android:text="Yes" />
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            tools:layout_editor_absoluteX="106dp"
-            tools:layout_editor_absoluteY="274dp">
-
-            <TextView
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="15dp"
-                android:fontFamily="@font/montserrat"
-                android:text="Playlist"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="25sp" />
-
-            <LinearLayout
-                android:id="@+id/playlist_button"
-                android:layout_width="wrap_content"
-                android:minWidth="150dp"
-                android:layout_height="50dp"
-                android:orientation="vertical"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="15dp"
-                android:gravity="center"
-                android:background="@drawable/gradient_background">
-
-                <TextView
-                    android:id="@+id/playlist_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/montserrat"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="7dp"
-                    android:layout_marginBottom="7dp"
-                    android:textSize="22sp"
-                    android:textAlignment="center"
-                    android:text="Random" />
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

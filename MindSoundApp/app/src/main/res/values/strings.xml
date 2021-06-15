@@ -8,5 +8,5 @@
     <string name="blink_detection_preference">BlinkDetectionPreference</string>
     <string name="playlist_preference">PlaylistPreference</string>
     <string name="match_mood_preference">MatchMoodPreference</string>
-    <string name="what_is_mindsound">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus rutrum lobortis imperdiet. Fusce dignissim sed libero sit amet congue. Suspendisse consequat, augue et laoreet efficitur, lacus turpis accumsan magna, nec pellentesque sem augue a mauris. </string>
+    <string name="what_is_mindsound">It is an application that is created to make your life easier by choosing your music for you. You won\'t have to focus on choosing your music anymore. We will do it for you! MindWave plays music corresponding to your emotional state and attention level. </string>
 </resources>

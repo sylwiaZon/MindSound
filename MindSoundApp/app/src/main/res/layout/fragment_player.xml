@@ -154,6 +154,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             android:fontFamily="@font/montserrat"
             android:text="Louder than bombs"
             android:textSize="20sp" />
@@ -182,7 +184,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_baseline_play_arrow_24" />
+                android:src="@drawable/ic_baseline_pause_24" />
 
             <ImageView
                 android:id="@+id/next_player"
