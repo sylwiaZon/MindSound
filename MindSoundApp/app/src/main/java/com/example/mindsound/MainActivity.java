@@ -2,7 +2,9 @@ package com.example.mindsound;
 
 import android.os.Bundle;
 
+import com.example.mindsound.spotify.SpotifyService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -27,4 +29,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SpotifyAppRemote.disconnect(SpotifyService.getInstance().getmSpotifyAppRemote());
+    }
 }

@@ -8,49 +8,80 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.example.mindsound.MainActivity;
 import com.example.mindsound.R;
+import com.example.mindsound.spotify.PlaylistService;
+import com.example.mindsound.spotify.SpotifyService;
+import com.example.mindsound.spotify.UserService;
+import com.example.mindsound.spotify.models.SpotifyUser;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE = 1337;
-
     private SharedPreferences.Editor editor;
 
-    private SharedPreferences msharedPreferences;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        queue = Volley.newRequestQueue(this);
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        // Check if result comes from the correct activity
-        if (requestCode == REQUEST_CODE) {
+        if (requestCode == SpotifyService.REQUEST_CODE) {
             AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
-                // Response was successful and contains auth token
                 case TOKEN:
                     editor = getSharedPreferences("SPOTIFY", 0).edit();
                     editor.putString("token", response.getAccessToken());
                     editor.apply();
-                    Intent intentMain = new Intent(this, MainActivity.class);
-                    startActivity(intentMain);
+                    waitForUserInfo();
+                    waitForPlaylistInfo();
                     break;
                 case ERROR:
                     Toast.makeText(
                             this,
-                            "Log in failed! Try again.",
+                            "Log in failed! Check if you have Spotify app on your device.",
                             Toast.LENGTH_LONG).show();
                     break;
                 default:
-                    // Handle other cases
+                    Toast.makeText(
+                            this,
+                            "Unknown error.",
+                            Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void waitForUserInfo() {
+        UserService userService = new UserService(queue, this.getSharedPreferences("SPOTIFY", 0));
+        userService.get(() -> {
+            SpotifyUser user = userService.getUser();
+            editor = getSharedPreferences("SPOTIFY", 0).edit();
+            editor.putString("userid", user.id);
+            Log.d("STARTING", "GOT USER INFORMATION");
+            editor.commit();
+        });
+    }
+
+    private void waitForPlaylistInfo() {
+        PlaylistService playlistService = new PlaylistService(queue, this.getSharedPreferences("SPOTIFY", 0));
+        playlistService.get(() -> {
+            Log.d("STARTING", "GOT PLAYLISTS INFORMATION");
+            boolean createdPlaylists = SpotifyService.getInstance().createPlaylistsBasedOnMood(playlistService.getPlaylists());
+            if (createdPlaylists){
+                Log.d("PLAYLISTS!", "Not enough playlists");
+            }
+            Intent intentMain = new Intent(this, MainActivity.class);
+            startActivity(intentMain);
+        });
     }
 }

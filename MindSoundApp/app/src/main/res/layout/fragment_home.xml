@@ -94,6 +94,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
+                        android:layout_marginTop="10dp"
                         android:src="@mipmap/music_icon_foreground" />
 
                     <ImageView
@@ -112,6 +113,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_weight="1"
+                        android:layout_marginBottom="10dp"
                         android:src="@mipmap/eye_icon_foreground" />
                 </LinearLayout>
 
@@ -119,6 +121,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp">
                 <TextView
                     android:id="@+id/premium_spotify_text_home_fragment"
@@ -136,7 +139,7 @@
                     android:fontFamily="@font/montserrat"
                     android:textColor="@color/white"
                     android:layout_marginTop="15dp"
-                    android:text="Skipping song if you do not ppreciate it." />
+                    android:text="Choosing song based on your mood and attention level." />
                 <TextView
                     android:id="@+id/blink_text_home_fragment"
                     android:layout_width="wrap_content"
@@ -145,7 +148,7 @@
                     android:fontFamily="@font/montserrat"
                     android:textColor="@color/white"
                     android:layout_marginTop="15dp"
-                    android:text="Skip or stop songs with blink." />
+                    android:text="Skip songs with blink." />
             </LinearLayout>
             </LinearLayout>
         </LinearLayout>
